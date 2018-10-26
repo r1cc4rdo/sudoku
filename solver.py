@@ -1,4 +1,4 @@
-from boards import *
+from io import board_to_pretty
 
 
 def propagate_out(board):
@@ -54,7 +54,7 @@ def twin_cells(board):
 
 def solve(board):
 
-    print board_to_representation(board)
+    print board_to_pretty(board)
 
     prev = 0
     while True:
@@ -69,12 +69,5 @@ def solve(board):
 
         prev = values
 
-    print board_to_representation(board, 9)
-
-
-if __name__ == '__main__':
-
-    name = 'hard1'
-
-    print '\n' + name + '\n'
-    solve(representation_to_board(boards[name]))
+    print board_to_pretty(board, 9)
+    return values
