@@ -1,3 +1,6 @@
+from boards import *
+
+
 def propagate_out(board):
     """
     Remove a known value from other groups (row, col, square)
@@ -49,18 +52,9 @@ def twin_cells(board):
                             group_cell['values'] -= cell['values']
 
 
-def pretty_print(board):
-    print ''
-    desc = ''.join(str(tuple(cell['values'])[0]) if len(cell['values']) == 1 else ' ' for cell in board)
-    for line in range(9):
-        print desc[9*line+0:9*line+3], '|', desc[9*line+3:9*line+6], '|', desc[9*line+6:9*line+9]
-        if line == 2 or line == 5:
-            print '----+-----+----'
-
-
 def solve(board):
 
-    pretty_print(board)
+    print board_to_representation(board)
 
     prev = 0
     while True:
@@ -75,104 +69,12 @@ def solve(board):
 
         prev = values
 
-    pretty_print(board)
-
-
-def input_to_board(board_strings):
-
-    board = []
-    for row, nums in enumerate(board_strings):
-        for col, num in enumerate(nums):
-
-            square = 3 * (row / 3) + col / 3
-            values = set((int(num),) if num != ' ' else range(1, 10))
-            board.append({'row': row, 'col': col, 'square': square, 'values': values})
-
-    return board
+    print board_to_representation(board, 9)
 
 
 if __name__ == '__main__':
 
-    boards = {
-        "simple": (' 276  5 8',
-                   ' 9  1   2',
-                   '6 4 82   ',
-                   '27 9     ',
-                   '  17 54  ',
-                   '     8 91',
-                   '   29 1 5',
-                   '5   7  8 ',
-                   '3 2  467 '),
+    name = 'hard1'
 
-        "hard1": ('7 4  591 ',
-                  '1   6  8 ',
-                  '   17 3 5',
-                  '     8 91',
-                  '  34 96  ',
-                  '68 7     ',
-                  '4 6 81   ',
-                  ' 7  9   4',
-                  ' 953  1 2'),
-
-        "hard2": ('5    3   ',
-                  '791  6  3',
-                  '     15 7',
-                  '8  3    2',
-                  ' 6     8 ',
-                  '1    2  5',
-                  '3 76     ',
-                  '9  2  751',
-                  '   4    6'),
-
-        "hard3": (' 2  9  34',
-                  '   2   18',
-                  '1    3   ',
-                  '  8 4  9 ',
-                  '75     46',
-                  ' 1  5 7  ',
-                  '   9    1',
-                  '59   6   ',
-                  '38  1  7 '),
-
-        "hard4": (' 2   9  5',
-                  ' 963   12',
-                  '         ',
-                  '4   97 2 ',
-                  '  82 49  ',
-                  ' 3 15   4',
-                  '         ',
-                  '68   174 ',
-                  '1  9   6 '),
-
-        "denali": ('   91    ',
-                   '8 25    1',
-                   ' 7 2   4 ',
-                   '     8 2 ',
-                   ' 4 1    8',
-                   '  5 2   4',
-                   '        9',
-                   '  6      ',
-                   '427 6    '),
-
-        "everest": ('8        ',
-                    '  36     ',
-                    ' 7  9 2  ',
-                    ' 5   7   ',
-                    '    457  ',
-                    '   1   3 ',
-                    '  1    68',
-                    '  85   1 ',
-                    ' 9    4  '),
-
-        "template": ('',
-                     '',
-                     '',
-                     '',
-                     '',
-                     '',
-                     '',
-                     '',
-                     '')
-    }
-
-    solve(input_to_board(boards['hard4']))
+    print '\n' + name + '\n'
+    solve(representation_to_board(boards[name]))
