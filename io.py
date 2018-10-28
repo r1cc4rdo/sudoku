@@ -1,3 +1,6 @@
+from collections import OrderedDict
+
+
 template = """ . . . | . . . | . . . 
                . . . | . . . | . . . 
                . . . | . . . | . . . 
@@ -60,26 +63,26 @@ def board_to_pretty(board, multi_values=1):
     This last representation, equivalent to the defaults multi_values=1,
     and can be fed back to representation_to_board(...)
     """
-    width = max(filter(lambda value: value <= multi_values, (len(cell['values']) for cell in board)))
-    values = [''.join(str(value) for value in cell['values']) for cell in board]
-    values = [(value if len(value) <= width else '.').center(width) for value in values]
+    width = max(filter(lambda value: value <= multi_values, (len(values) for values in board.itervalues())))
+    values_string = [''.join(str(value) for value in values) for values in board.itervalues()]
+    values_string = [(value if len(value) <= width else '.').center(width) for value in values_string]
 
     representation = ''
     horizontal_line = '+'.join(['-' * (1 + (width + 1) * 3)] * 3) + '\n'
-    for value, cell in zip(values, board):
+    for value_string, ((row, col, square), values) in zip(values_string, board.iteritems()):
 
-        if cell['col'] == 0:
+        if col == 0:
             representation += ' '
 
-        representation += value + ' '
+        representation += value_string + ' '
 
-        if cell['col'] in (2, 5):
+        if col in (2, 5):
             representation += '| '
 
-        if cell['col'] == 8:
+        if col == 8:
             representation += '\n'
 
-        if cell['row'] in (2, 5) and cell['col'] == 8:
+        if row in (2, 5) and col == 8:
             representation += horizontal_line
 
     return representation
@@ -90,7 +93,7 @@ def board_to_string(board):
     Prints a one-liner version of a board, displaying all unambiguously allocated numbers or a '.' otherwise.
     Example: ".276..5.8.9..1...26.4.82...27.9.......17.54.......8.91...29.1.55...7..8.3.2..467."
     """
-    strings = [''.join(map(str, cell['values'])) for cell in board]
+    strings = [''.join(map(str, values)) for values in board.itervalues()]
     return ''.join(s if len(s) == 1 else '.' for s in strings)
 
 
@@ -116,9 +119,9 @@ def string_to_board(board_representation):
     and return the internal representation for a sudoku board (a collection of 81 sets,
     containing the possible values for a cell).
     """
-    board = []
     blanks = '.x0'
     char_counter = 0
+    board = OrderedDict()
     for character in board_representation:
 
         if not (character.isdigit() or character in blanks):
@@ -128,8 +131,23 @@ def string_to_board(board_representation):
         row = char_counter // 9
         square = 3 * (row / 3) + col / 3
         values = set((int(character),) if character not in blanks else range(1, 10))
-        board.append({'row': row, 'col': col, 'square': square, 'values': values})
+        board[(row, col, square)] = values
 
         char_counter += 1
 
     return board
+
+
+if __name__ == '__main__':
+
+    board_string = "..36.49......5....9.......72.......6.4.....5.8.......11.......5..........9273641."
+
+    board = string_to_board(board_string)
+    print '\nInternal representation:\n'
+    for k, v in board.iteritems():
+        print k, ': ', v
+
+    print '\nto_string:\n\n', board_to_string(board)
+    print '\npretty\n\n', board_to_pretty(board)
+
+    print board.values()
