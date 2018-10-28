@@ -24,3 +24,5 @@ if __name__ == '__main__':
         count += ok
 
     print '\nSolved: {} / {}'.format(count, len(board_strings))
+
+# TODO: 6 vs 4 / 9 from old to new code

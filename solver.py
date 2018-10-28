@@ -1,55 +1,41 @@
-from io import board_to_pretty
+from io import board_to_pretty, string_to_board
 
 
 def propagate_out(board):
     """
     Remove a known value from other groups (row, col, square)
     """
-    for cell in board:
-        if len(cell['values']) == 1:
-            for other_cell in board:
-                if cell is not other_cell and any([cell[group] == other_cell[group] for group in ('row', 'col', 'square')]):
-                    other_cell['values'] -= cell['values']
+    for rcs, values in board.iteritems():  # for all cells
+        if len(values) == 1:  # if allocated
+            for other_values in board.peers(rcs, values):  # for all peers
+                other_values -= values  # remove cell value from other cell possible values
 
 
 def propagate_in(board):
     """
     If all other values in a group cover all but 1 number, you're that number
     """
-    for cell in board:
-        groups = []
-        for group in ('row', 'col', 'square'):
-
-            group_values = []
-            for other_cell in board:
-                if cell is not other_cell and any([cell[group] == other_cell[group]]):
-                    group_values.append(other_cell['values'])
-
-            groups.append(set(range(1, 10)) - set(el for els in group_values for el in els))
-
-        for values_in_group in groups:
-            if len(values_in_group) == 1:
-                cell['values'] = values_in_group
+    for rcs, values in board.iteritems():
+        for fun, index in zip((board.row, board.col, board.square), rcs):
+            values_left = set(range(1, 10)) - set(value for values in fun(index, values) for value in values)
+            if len(values_left) == 1:
+                values = values_left
 
 
 def twin_cells(board):
     """
     If two cells in a group share the same two possible values, remove those values from the rest of the group
     """
-    for group in ('row', 'col', 'square'):
-        for num in range(10):
-            cells = [cell for cell in board if cell[group] == num]
-            for cell in cells:
-                if len(cell['values']) != 2:
-                    continue
-                for other_cell in cells:
-                    if cell is other_cell:
-                        continue
-                    if cell['values'] == other_cell['values']:
-                        for group_cell in cells:
-                            if group_cell is cell or group_cell is other_cell:
-                                continue
-                            group_cell['values'] -= cell['values']
+    for rcs, values in board.iteritems():
+        if len(values) != 2:
+            continue
+
+        for fun, index in zip((board.row, board.col, board.square), rcs):
+            for other_values in fun(index, values):
+                if values == other_values:
+                    for neither in fun(index, values):
+                        if neither is not other_values:
+                            neither -= values
 
 
 def solve(board):
@@ -59,7 +45,7 @@ def solve(board):
     prev = 0
     while True:
 
-        values = sum(len(cell['values']) for cell in board)
+        values = sum(len(values) for values in board.itervalues())
         if values == prev or values == 81:
             break
 
@@ -71,3 +57,9 @@ def solve(board):
 
     print board_to_pretty(board, 9)
     return values
+
+
+if __name__ == '__main__':
+
+    board_string = "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4.."
+    solve(string_to_board(board_string))

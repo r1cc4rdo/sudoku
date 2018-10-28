@@ -136,16 +136,24 @@ def string_to_board(board_representation):
 
         char_counter += 1
 
-    board.row = partial(group_iterator, board, 0)
-    board.col = partial(group_iterator, board, 1)
-    board.square = partial(group_iterator, board, 2)
+    board.row = partial(group_iterator, board, [0])
+    board.col = partial(group_iterator, board, [1])
+    board.square = partial(group_iterator, board, [2])
+    board.peers = partial(group_iterator, board, range(3))
+
     return board
 
 
-def group_iterator(board, group, index):
+def group_iterator(board, groups, indexes, values_to_skip=None):
+    if not isinstance(indexes, list) and not isinstance(indexes, tuple):  # TODO: iterable abstract
+        indexes = [indexes]
+
     for rcs, values in board.iteritems():
-        if rcs[group] == index:
-            yield values
+        for group, index in zip(groups, indexes):
+            if rcs[group] == index:
+                if values is not values_to_skip:
+                    yield values
+                    break
 
 
 if __name__ == '__main__':
@@ -160,6 +168,8 @@ if __name__ == '__main__':
     print '\nto_string:\n\n', board_to_string(board)
     print '\npretty\n\n', board_to_pretty(board)
 
-    print '\nrow 0:\n\n', list(board.row(0))
-    print '\ncol 2:\n\n', list(board.col(2))
-    print '\nsquare 6:\n\n', list(board.square(6))
+    print '\nrow 2:\n\n', filter(lambda x: x if len(x) < 9 else [], board.row(2))
+    print '\ncol 2:\n\n', filter(lambda x: x if len(x) < 9 else [], board.col(2))
+    print '\nsquare 0:\n\n', filter(lambda x: x if len(x) < 9 else [], board.square(0))
+
+    print '\npeers 2, 2, 0:\n\n', filter(lambda x: x if len(x) < 9 else [], board.peers((2, 2, 0)))
