@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from functools import partial
 
 
 template = """ . . . | . . . | . . . 
@@ -135,7 +136,16 @@ def string_to_board(board_representation):
 
         char_counter += 1
 
+    board.row = partial(group_iterator, board, 0)
+    board.col = partial(group_iterator, board, 1)
+    board.square = partial(group_iterator, board, 2)
     return board
+
+
+def group_iterator(board, group, index):
+    for rcs, values in board.iteritems():
+        if rcs[group] == index:
+            yield values
 
 
 if __name__ == '__main__':
@@ -150,4 +160,6 @@ if __name__ == '__main__':
     print '\nto_string:\n\n', board_to_string(board)
     print '\npretty\n\n', board_to_pretty(board)
 
-    print board.values()
+    print '\nrow 0:\n\n', list(board.row(0))
+    print '\ncol 2:\n\n', list(board.col(2))
+    print '\nsquare 6:\n\n', list(board.square(6))
