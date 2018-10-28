@@ -1,4 +1,5 @@
 from io import board_to_pretty, string_to_board
+from itertools import chain, combinations
 
 
 def propagate_out(board):
@@ -38,6 +39,38 @@ def twin_cells(board):
                             neither -= values
 
 
+def one_rule_to_rule_them_all(board):
+
+    subsets_indexes = list(chain.from_iterable(combinations(range(9), num + 1) for num in range(8)))
+    for group in [board.rows, board.cols, board.squares]:  # for every row, col and square
+        for group_index in range(9):
+            for subset_indexes in subsets_indexes:  # for every subset of the group
+
+                subset = [group[group_index][index] for index in subset_indexes]
+                subset_possible_values = reduce(lambda a, b: a.union(b), subset)
+                if len(subset_possible_values) == len(subset):  # if the subset contains as many values as cells
+
+                    # if here, we found a group of cells that cast a constraints on the remainder of any group they belong
+
+                    # if len(subset_possible_values) < 4:
+                    #
+                    #     for other_group in rows, cols, squares:  # for any group the cells belong to
+                    #         for other_group_index in range(9):
+                    #             if all(cell in other_group[other_group_index] for cell in subset):
+                    #
+                    #                 for cell in other_group[other_group_index]:
+                    #                     if cell in subset:
+                    #                         continue
+                    #
+                    #                     cell -= subset_possible_values  # remove the other cells
+                    #
+                    # else:
+
+                    other_indexes = [index for index in range(9) if index not in subset_indexes]
+                    for other_index in other_indexes:
+                        group[group_index][other_index] -= subset_possible_values  # remove the other cells
+
+
 def solve(board):
 
     print board_to_pretty(board)
@@ -49,9 +82,10 @@ def solve(board):
         if values == prev or values == 81:
             break
 
-        propagate_out(board)
-        propagate_in(board)
-        twin_cells(board)
+        one_rule_to_rule_them_all(board)
+        # propagate_out(board)
+        # propagate_in(board)
+        # twin_cells(board)
 
         prev = values
 
@@ -62,4 +96,9 @@ def solve(board):
 if __name__ == '__main__':
 
     board_string = "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4.."
-    solve(string_to_board(board_string))
+    board = string_to_board(board_string)
+    solve(board)
+
+    print board.rows
+    print board.cols
+    print board.squares

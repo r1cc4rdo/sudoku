@@ -141,6 +141,14 @@ def string_to_board(board_representation):
     board.square = partial(group_iterator, board, [2])
     board.peers = partial(group_iterator, board, range(3))
 
+    board.rows = [[] for _ in range(9)]
+    board.cols = [[] for _ in range(9)]
+    board.squares = [[] for _ in range(9)]
+    for (row, col, square), values in board.iteritems():
+        board.rows[row].append(values)
+        board.cols[col].append(values)
+        board.squares[square].append(values)
+
     return board
 
 
