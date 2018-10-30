@@ -145,9 +145,9 @@ def string_to_board(board_representation):
     board.cols = [[] for _ in range(9)]
     board.squares = [[] for _ in range(9)]
     for (row, col, square), values in board.iteritems():
-        board.rows[row].append(values)
-        board.cols[col].append(values)
-        board.squares[square].append(values)
+        board.rows[row].append((row, col, square))
+        board.cols[col].append((row, col, square))
+        board.squares[square].append((row, col, square))
 
     return board
 

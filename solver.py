@@ -1,4 +1,4 @@
-from io import board_to_pretty, string_to_board
+from sudoku_io import board_to_pretty, string_to_board
 from itertools import chain, combinations
 
 
@@ -39,36 +39,65 @@ def twin_cells(board):
                             neither -= values
 
 
+def non_empty_proper_subsets(dim):
+    """
+    Return all the non-empty proper subset of a collection of size dim, as an iterator returning list of indexes.
+    """
+    return chain.from_iterable(combinations(range(dim), num) for num in range(1, dim))
+
+
 def one_rule_to_rule_them_all(board):
 
-    subsets_indexes = list(chain.from_iterable(combinations(range(9), num + 1) for num in range(8)))
-    for group in [board.rows, board.cols, board.squares]:  # for every row, col and square
-        for group_index in range(9):
-            for subset_indexes in subsets_indexes:  # for every subset of the group
+    subsets_indexes = list(non_empty_proper_subsets(9))
+    for group in chain.from_iterable((board.rows, board.cols, board.squares)):  # for every row, col and square
+        for subset_indexes in subsets_indexes:  # for every subset of the group
 
-                subset = [group[group_index][index] for index in subset_indexes]
-                subset_possible_values = reduce(lambda a, b: a.union(b), subset)
-                if len(subset_possible_values) == len(subset):  # if the subset contains as many values as cells
+            group_subset = [group[index] for index in subset_indexes]
+            possible_values_in_subset = reduce(lambda s, rcs: s | board[rcs], group_subset, set())
+            if len(possible_values_in_subset) == len(group_subset):  # if the subset contains as many values as cells, it's a constraint
 
-                    # if here, we found a group of cells that cast a constraints on the remainder of any group they belong
+                for other_group in chain.from_iterable((board.rows, board.cols, board.squares)):  # for any group the subset belongs to
+                    if set(group_subset).issubset(set(other_group)):
+                        for rcs in other_group:
+                            if rcs not in group_subset:
+                                board[rcs] -= possible_values_in_subset  # remove the other cells
 
-                    # if len(subset_possible_values) < 4:
-                    #
-                    #     for other_group in rows, cols, squares:  # for any group the cells belong to
-                    #         for other_group_index in range(9):
-                    #             if all(cell in other_group[other_group_index] for cell in subset):
-                    #
-                    #                 for cell in other_group[other_group_index]:
-                    #                     if cell in subset:
-                    #                         continue
-                    #
-                    #                     cell -= subset_possible_values  # remove the other cells
-                    #
-                    # else:
+                                assert(board[rcs])
 
-                    other_indexes = [index for index in range(9) if index not in subset_indexes]
-                    for other_index in other_indexes:
-                        group[group_index][other_index] -= subset_possible_values  # remove the other cells
+
+def one_rule_to_rule_them_all_mod(board):
+    """
+    more ideas:
+    https://www.kristanix.com/sudokuepic/sudoku-solving-techniques.php
+    http://www.sudokudragon.com/sudokustrategy.htm
+    http://www.sudokudragon.com/advancedstrategy.htm
+    """
+    subsets_indexes = list(non_empty_proper_subsets(9))
+    for group in chain.from_iterable((board.rows, board.cols, board.squares)):  # for every row, col and square
+        for subset_indexes in subsets_indexes:  # for every subset of the group
+
+            group_subset = [group[index] for index in subset_indexes]
+            possible_values_in_subset = reduce(lambda s, rcs: s | board[rcs], group_subset, set())
+
+            # hidden subset - n numbers can only appear in n cells, erase other candidates from those cells
+
+            remainder = [group[index] for index in range(9) if index not in subset_indexes]
+            possible_values_in_remainder = reduce(lambda s, rcs: s | board[rcs], remainder, set())
+            values_only_here = possible_values_in_subset - possible_values_in_remainder
+            if len(values_only_here) == len(group_subset):
+                for rcs in group_subset:
+                    board[rcs] -= set(range(1, 9)) - values_only_here  # subtract not to overwrite set pointer
+
+            # naked subset - n cells contains only n candidates, erase candidates from group remainder
+
+            if len(possible_values_in_subset) == len(group_subset):  # if the subset contains as many values as cells, it's a constraint
+                for other_group in chain.from_iterable((board.rows, board.cols, board.squares)):  # for any group the subset belongs to
+                    if set(group_subset).issubset(set(other_group)):
+                        for rcs in other_group:
+                            if rcs not in group_subset:
+                                board[rcs] -= possible_values_in_subset  # remove the other cells
+
+                                assert(board[rcs])
 
 
 def solve(board):
@@ -82,7 +111,7 @@ def solve(board):
         if values == prev or values == 81:
             break
 
-        one_rule_to_rule_them_all(board)
+        one_rule_to_rule_them_all_mod(board)
         # propagate_out(board)
         # propagate_in(board)
         # twin_cells(board)
@@ -90,6 +119,9 @@ def solve(board):
         prev = values
 
     print board_to_pretty(board, 9)
+    if values > 81:
+        print board_to_pretty(board)
+
     return values
 
 
