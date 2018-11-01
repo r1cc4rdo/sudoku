@@ -1,19 +1,5 @@
 from collections import OrderedDict
-from functools import partial
-
-
-template = """ . . . | . . . | . . . 
-               . . . | . . . | . . . 
-               . . . | . . . | . . . 
-              -------+-------+-------
-               . . . | . . . | . . . 
-               . . . | . . . | . . . 
-               . . . | . . . | . . . 
-              -------+-------+-------
-               . . . | . . . | . . . 
-               . . . | . . . | . . . 
-               . . . | . . . | . . . 
-"""
+from itertools import islice
 
 
 def board_to_pretty(board, multi_values=1):
@@ -64,29 +50,13 @@ def board_to_pretty(board, multi_values=1):
     This last representation, equivalent to the defaults multi_values=1,
     and can be fed back to representation_to_board(...)
     """
-    width = max(filter(lambda value: value <= multi_values, (len(values) for values in board.itervalues())))
-    values_string = [''.join(str(value) for value in values) for values in board.itervalues()]
-    values_string = [(value if len(value) <= width else '.').center(width) for value in values_string]
+    value_strings = [''.join(str(value) for value in values) for values in board.itervalues()]
+    value_strings = [value if len(value) <= multi_values else '.' for value in value_strings]
+    width = max(len(value_string) for value_string in value_strings)
 
-    representation = ''
-    horizontal_line = '+'.join(['-' * (1 + (width + 1) * 3)] * 3) + '\n'
-    for value_string, ((row, col, square), values) in zip(values_string, board.iteritems()):
-
-        if col == 0:
-            representation += ' '
-
-        representation += value_string + ' '
-
-        if col in (2, 5):
-            representation += '| '
-
-        if col == 8:
-            representation += '\n'
-
-        if row in (2, 5) and col == 8:
-            representation += horizontal_line
-
-    return representation
+    sl = ' {} {} {} | {} {} {} | {} {} {} \n'  # standard line
+    hd = '+'.join(['-' * (1 + (width + 1) * 3)] * 3) + '\n'  # horizontal divider
+    return (sl * 3 + hd + sl * 3 + hd + sl * 3).format(*(value_string.center(width) for value_string in value_strings))
 
 
 def board_to_string(board):
@@ -114,54 +84,18 @@ def string_to_board(board_representation):
      . . 8 | 5 . . | . 1 .
      . 9 . | . . . | 4 . .
 
-    or 800000000003600000070090200050007000000045700000100030001000068008500010090000400
-    or 8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..
+    or 800000000003600000070090200050007000000045700000100030001000068008500010090000400 comment, or name
+    or 8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4.. anything after is ignored
 
     and return the internal representation for a sudoku board (a collection of 81 sets,
-    containing the possible values for a cell).
+    containing the possible values for a cell, indexed by (row, col, square)).
     """
     blanks = '.x0'
-    char_counter = 0
     board = OrderedDict()
-    for character in board_representation:
-
-        if not (character.isdigit() or character in blanks):
-            continue
-
-        col = char_counter % 9
-        row = char_counter // 9
-        square = 3 * (row / 3) + col / 3
-        values = set((int(character),) if character not in blanks else range(1, 10))
-        board[(row, col, square)] = values
-
-        char_counter += 1
-
-    board.row = partial(group_iterator, board, [0])
-    board.col = partial(group_iterator, board, [1])
-    board.square = partial(group_iterator, board, [2])
-    board.peers = partial(group_iterator, board, range(3))
-
-    board.rows = [[] for _ in range(9)]
-    board.cols = [[] for _ in range(9)]
-    board.squares = [[] for _ in range(9)]
-    for (row, col, square), values in board.iteritems():
-        board.rows[row].append((row, col, square))
-        board.cols[col].append((row, col, square))
-        board.squares[square].append((row, col, square))
-
+    for cnt, c in enumerate(islice([c for c in board_representation if c.isdigit() or c in blanks], 81)):
+        row, col, values = cnt // 9, cnt % 9, {int(c),} if c not in blanks else range(1, 10)
+        board[(row, col, 3 * (row / 3) + col / 3)] = values
     return board
-
-
-def group_iterator(board, groups, indexes, values_to_skip=None):
-    if not isinstance(indexes, list) and not isinstance(indexes, tuple):  # TODO: iterable abstract
-        indexes = [indexes]
-
-    for rcs, values in board.iteritems():
-        for group, index in zip(groups, indexes):
-            if rcs[group] == index:
-                if values is not values_to_skip:
-                    yield values
-                    break
 
 
 if __name__ == '__main__':
@@ -176,8 +110,16 @@ if __name__ == '__main__':
     print '\nto_string:\n\n', board_to_string(board)
     print '\npretty\n\n', board_to_pretty(board)
 
-    print '\nrow 2:\n\n', filter(lambda x: x if len(x) < 9 else [], board.row(2))
-    print '\ncol 2:\n\n', filter(lambda x: x if len(x) < 9 else [], board.col(2))
-    print '\nsquare 0:\n\n', filter(lambda x: x if len(x) < 9 else [], board.square(0))
-
-    print '\npeers 2, 2, 0:\n\n', filter(lambda x: x if len(x) < 9 else [], board.peers((2, 2, 0)))
+    template = """ . . . | . . . | . . . 
+                   . . . | . . . | . . . 
+                   . . . | . . . | . . . 
+                  -------+-------+-------
+                   . . . | . . . | . . . 
+                   . . . | . . . | . . . 
+                   . . . | . . . | . . . 
+                  -------+-------+-------
+                   . . . | . . . | . . . 
+                   . . . | . . . | . . . 
+                   . . . | . . . | . . . 
+    """
+    print board_to_string(string_to_board(template))
