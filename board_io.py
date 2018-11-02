@@ -84,8 +84,13 @@ def string_to_board(board_representation):
      . . 8 | 5 . . | . 1 .
      . 9 . | . . . | 4 . .
 
-    or 800000000003600000070090200050007000000045700000100030001000068008500010090000400 comment, or name
-    or 8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4.. anything after is ignored
+    or also:
+
+    800000000003600000070090200050007000000045700000100030001000068008500010090000400 comment, or name
+
+    or again:
+
+    8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4.. anything until EOL is ignored
 
     and return the internal representation for a sudoku board (a collection of 81 sets,
     containing the possible values for a cell, indexed by (row, col, square)).
@@ -93,14 +98,15 @@ def string_to_board(board_representation):
     blanks = '.x0'
     board = OrderedDict()
     for cnt, c in enumerate(islice([c for c in board_representation if c.isdigit() or c in blanks], 81)):
-        row, col, values = cnt // 9, cnt % 9, {int(c),} if c not in blanks else range(1, 10)
+        row, col, values = cnt // 9, cnt % 9, set([int(c)] if c not in blanks else range(1, 10))
         board[(row, col, 3 * (row / 3) + col / 3)] = values
     return board
 
 
 if __name__ == '__main__':
 
-    board_string = "..36.49......5....9.......72.......6.4.....5.8.......11.......5..........9273641."
+    # board_string = "..36.49......5....9.......72.......6.4.....5.8.......11.......5..........9273641."
+    board_string = "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4.."
 
     board = string_to_board(board_string)
     print '\nInternal representation:\n'
@@ -123,3 +129,20 @@ if __name__ == '__main__':
                    . . . | . . . | . . . 
     """
     print board_to_string(string_to_board(template))
+
+
+board_template = """
+
+ 8 . . | . . . | . . . 
+ . . 3 | 6 . . | . . . 
+ . 7 . | . 9 . | 2 . . 
+-------+-------+-------
+ . 5 . | . . 7 | . . . 
+ . . . | . 4 5 | 7 . . 
+ . . . | 1 . . | . 3 . 
+-------+-------+-------
+ . . 1 | . . . | . 6 8 
+ . . 8 | 5 . . | . 1 . 
+ . 9 . | . . . | 4 . . 
+
+"""

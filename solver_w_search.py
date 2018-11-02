@@ -1,10 +1,10 @@
-from sudoku_plot import plot_board
-from sudoku_io import board_to_pretty, string_to_board
+from board_plot import plot_board
+from board_io import board_to_pretty, string_to_board
 from itertools import combinations, product
 from copy import deepcopy
 
 
-def one_rule_to_rule_them_all(board, subset_size=1):
+def eliminate_plus(board, subset_size=1):
     """
     This rule subsumes several weaker rules for solving Sudokus.
     When subset_size == 1 and applied iteratively, it implements the basic elimination strategy that removes a known
@@ -60,37 +60,30 @@ def search(board):
         board_copy = deepcopy(board)
         board_copy[pivot] = {element}
         try:
-            propagate(board_copy)
+            solve(board_copy)
             return board_copy
         except AssertionError as e:
             pass
 
 
-def propagate(board):
+def solve(board):
 
-    prev = 0
-    depth = 1
-    while True:
+    allocated = prev = 1 + 9**3
+    group_subset_dim = 1
+    while allocated > 81:
 
         allocated = sum(len(candidates) for candidates in board.itervalues())
-        if allocated == 81:
-            break
+        if allocated == prev and group_subset_dim == 4:
+            return search(board)
 
-        if allocated == prev:
-            if depth == 4:
-                return search(board)
-            else:
-                depth += 1
-        else:
-            depth = 1
-
-        one_rule_to_rule_them_all(board, depth)
+        group_subset_dim = 1 if allocated < prev else group_subset_dim + 1
+        eliminate_plus(board, group_subset_dim)
         prev = allocated
 
     return board
 
 
-def propagate_debug(board, debug=False, plot=False):
+def solve_debug(board, debug=False, plot=False):
 
     if plot:
         plot_board(board)
@@ -116,7 +109,7 @@ def propagate_debug(board, debug=False, plot=False):
         if debug:
             print 'Current score: {}, applying with depth == {}\n'.format(values, depth)
 
-        one_rule_to_rule_them_all(board, depth)
+        eliminate_plus(board, depth)
 
         if debug:
             if plot:
@@ -136,6 +129,10 @@ def propagate_debug(board, debug=False, plot=False):
 
 if __name__ == '__main__':
 
-    board_string = "...6..2..8.4.3.........9...4.5.....771.........3.5...83...7...4.....19.....2...6."
+    # board_string = "...6..2..8.4.3.........9...4.5.....771.........3.5...83...7...4.....19.....2...6."
+    board_string = ".2..9..34...2...181....3.....8.4..9.75.....46.1..5.7.....9....159...6...38..1..7."
     board = string_to_board(board_string)
-    propagate(board, True)
+
+    print board_to_pretty(board)
+    solve(board)
+    print board_to_pretty(board, 9)

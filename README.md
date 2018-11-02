@@ -1,3 +1,6 @@
+https://github.com/r1cc4rdo/sudoku
+http://norvig.com/sudoku.html
+
 # TODO
 
 Code more rules:

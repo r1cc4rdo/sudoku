@@ -1,4 +1,4 @@
-from sudoku_io import board_to_pretty, string_to_board
+from board_io import board_to_pretty, string_to_board
 
 
 def eliminate(board):
@@ -45,29 +45,23 @@ def naked_twins(board):
                         assert board[neither]
 
 
-def solve_three_rules(board):
+def solve(board):
 
-    print board_to_pretty(board)
-
-    prev = 0
-    while True:
-
-        values = sum(len(values) for values in board.itervalues())
-        if values == prev or values == 81:
-            break
+    allocated, prev = 1 + 9**3, 0
+    while allocated != prev and allocated > 81:
 
         eliminate(board)
         unique_candidate(board)
         naked_twins(board)
 
-        prev = values
-
-    print board_to_pretty(board, 9)
-    return values
+        prev, allocated = allocated, sum(len(values) for values in board.itervalues())
 
 
 if __name__ == '__main__':
 
     board_string = ".2..9..34...2...181....3.....8.4..9.75.....46.1..5.7.....9....159...6...38..1..7."
     board = string_to_board(board_string)
-    solve_three_rules(board)
+
+    print board_to_pretty(board)
+    solve(board)
+    print board_to_pretty(board, 9)

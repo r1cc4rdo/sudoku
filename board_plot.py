@@ -1,3 +1,4 @@
+import matplotlib.patches as patches
 import matplotlib.pyplot as plot
 from collections import Counter
 
@@ -8,6 +9,10 @@ def plot_board(board, always_print_pencil_marks=False, colorize_conjugated_pairs
     """
     plot.figure().add_subplot(111, aspect='equal')
     plot.axis('off')
+
+    for origin in ((0.3, 0.0), (0.0, 0.3), (0.6, 0.3), (0.3, 0.6)):
+        rect = patches.Rectangle(origin, 0.3, 0.3, facecolor=(0.96,) * 3)
+        plot.gca().add_patch(rect)
 
     for step in range(10):  # print grid
         plot.plot((0.1 * step, 0.1 * step), (0, 0.9), 'k-', linewidth=4 if step % 3 == 0 else 1)
