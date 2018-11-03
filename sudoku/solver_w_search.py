@@ -3,7 +3,7 @@ from itertools import combinations, product
 from copy import deepcopy
 
 
-def eliminate_plus(board, subset_size=1):
+def eliminate_plus(board):
     """
     This rule subsumes several weaker rules for solving Sudokus.
     Other than the basic elimination strategy that removes a known cell value from the possible candidates for peers,
@@ -16,13 +16,12 @@ def eliminate_plus(board, subset_size=1):
     share cells, it cannot solve all sudokus by itself. All the other advanced strategies for solving extremely
     hard sudokus are based on graph-coloring and hypothesis testing.
     """
-    groups = [[rcs for rcs in board if rcs[rcs_type] == num] for num in range(9) for rcs_type in range(3)]
-    for subset_indexes, group in product(combinations(range(9), subset_size), groups):
-        for group_subset in [[group[i] for i in range(9) if (i in subset_indexes) == tf] for tf in (True, False)]:
-            possible_values_in_subset = reduce(lambda s, k: s | board[k], group_subset, set())
-            if len(possible_values_in_subset) == len(group_subset):  # we found a constraint
-                all_supersets = [group for group in groups if set(group_subset).issubset(set(group))]
-                for rcs in [rcs for group in all_supersets for rcs in group if rcs not in group_subset]:
+    for subset_size, group in product(range(1, 9), board.groups):
+        for subset in combinations((rcs for rcs in group if len(board[rcs]) == subset_size), subset_size):
+            possible_values_in_subset = reduce(lambda s, k: s | board[k], subset, set())
+            if len(possible_values_in_subset) == len(subset):  # we found a constraint
+                all_supersets = [g for g in board.groups if all(rcs in g for rcs in subset)]
+                for rcs in [rcs for g in all_supersets for rcs in g if rcs not in subset]:
                     board[rcs] -= possible_values_in_subset
                     assert board[rcs]
 
@@ -46,17 +45,14 @@ def search(board):
 
 def solve(board):
 
-    allocated = prev = 1 + 9**3
-    group_subset_dim = 1
+    allocated = 1 + 9**3
     while allocated > 81:
 
-        allocated = sum(len(candidates) for candidates in board.itervalues())
-        if allocated == prev and group_subset_dim == 4:
+        prev, allocated = allocated, sum(len(candidates) for candidates in board.itervalues())
+        if allocated == prev:  # no progress
             return search(board)
 
-        group_subset_dim = 1 if allocated < prev else group_subset_dim + 1
-        eliminate_plus(board, group_subset_dim)
-        prev = allocated
+        eliminate_plus(board)
 
     return board
 

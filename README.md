@@ -59,3 +59,8 @@ After you divide into two group, the elimination step applies to every group all
 4. http://norvig.com/sudoku.html
 5. https://en.wikipedia.org/wiki/Mathematics_of_Sudoku
 6. https://en.wikipedia.org/wiki/Sudoku_solving_algorithms
+
+
+http://www.sudokuwiki.org/sudoku.htm?bd=800000000003600000070090200050007000000045700000100030001000068008500010090000400
+
+http://www.sudokuwiki.org/Strategy_Families

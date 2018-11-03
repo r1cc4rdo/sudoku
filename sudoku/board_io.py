@@ -100,5 +100,6 @@ def string_to_board(board_representation):
     for cnt, c in enumerate(islice([c for c in board_representation if c.isdigit() or c in blanks], 81)):
         row, col, values = cnt // 9, cnt % 9, set([int(c)] if c not in blanks else range(1, 10))
         board[(row, col, 3 * (row / 3) + col / 3)] = values
+    board.groups = [[rcs for rcs in board if rcs[rcs_type] == num] for num in range(9) for rcs_type in range(3)]
     return board
 
