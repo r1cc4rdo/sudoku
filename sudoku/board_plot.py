@@ -2,7 +2,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plot
 from collections import Counter
 
-from solver_w_search import eliminate_plus, search
+from solver_w_search import eliminate, search
 
 
 def plot_board(board, always_print_pencil_marks=False, colorize_conjugated_pairs=False):
@@ -55,7 +55,7 @@ def plot_solve(board):
             return search(board)
 
         group_subset_dim = 1 if allocated < prev else group_subset_dim + 1
-        eliminate_plus(board, group_subset_dim)
+        eliminate(board, group_subset_dim)
         prev = allocated
 
     return board

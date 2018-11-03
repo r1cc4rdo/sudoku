@@ -1,9 +1,15 @@
+"""
+A self-contained sudoku solver.
+This is just code from the sudoku module in a single file stripped of comments and blank lines.
+For details on functions and parameters, look at board_io.py and solver_w_search.py
+"""
+
 from itertools import combinations, product, islice
 from collections import OrderedDict
 from copy import deepcopy
 
 
-def eliminate_plus(board):
+def eliminate(board):
     for subset_size, group in product(range(1, 9), board.groups):
         for subset in combinations((rcs for rcs in group if len(board[rcs]) == subset_size), subset_size):
             possible_values_in_subset = reduce(lambda s, k: s | board[k], subset, set())
@@ -33,7 +39,7 @@ def solve(board):
         prev, allocated = allocated, sum(len(candidates) for candidates in board.itervalues())
         if allocated == prev:  # no progress
             return search(board)
-        eliminate_plus(board)
+        eliminate(board)
     return board
 
 

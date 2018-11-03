@@ -3,7 +3,7 @@ from itertools import combinations, product
 from copy import deepcopy
 
 
-def eliminate_plus(board):
+def eliminate(board):
     """
     This rule subsumes several weaker rules for solving Sudokus.
     Other than the basic elimination strategy that removes a known cell value from the possible candidates for peers,
@@ -52,7 +52,7 @@ def solve(board):
         if allocated == prev:  # no progress
             return search(board)
 
-        eliminate_plus(board)
+        eliminate(board)
 
     return board
 

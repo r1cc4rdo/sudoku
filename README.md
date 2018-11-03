@@ -24,7 +24,7 @@ When subset_size == 2, it is equivalent to applying the "hidden twins" rule (for
 (subset of size 6) and "naked triplet" (subset of size 3). In general, again using the terminology of [1, 2],
 when iterated it is a generic substitute for "general permutation", "naked chains", and "hidden chains".
 
-![Sudoku solve animation](./images/solve.gif)
+![Sudoku solve animation](./images/everest.png)
 
 This suffices to solve most sudokus rated "very hard", "super fiendish", and equivalent.
 Since this operates on a single group at a time, and propagates information within groups only if they
