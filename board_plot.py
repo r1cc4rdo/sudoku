@@ -2,6 +2,8 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plot
 from collections import Counter
 
+from solver_w_search import eliminate_plus, search
+
 
 def plot_board(board, always_print_pencil_marks=False, colorize_conjugated_pairs=False):
     """
@@ -38,3 +40,22 @@ def plot_board(board, always_print_pencil_marks=False, colorize_conjugated_pairs
                 dx, dy = (value - 1) % 3 - 1, 1 - (value - 1) // 3
                 plot.text(bx + 0.028 * dx, by + 0.028 * dy, str(value), fontsize=10,
                           color='red' if value in conjugated else (0.2,) * 3, **centered)
+
+
+def plot_solve(board):
+
+    allocated = prev = 1 + 9**3
+    group_subset_dim = 1
+    while allocated > 81:
+
+        plot_board(board)
+
+        allocated = sum(len(candidates) for candidates in board.itervalues())
+        if allocated == prev and group_subset_dim == 4:
+            return search(board)
+
+        group_subset_dim = 1 if allocated < prev else group_subset_dim + 1
+        eliminate_plus(board, group_subset_dim)
+        prev = allocated
+
+    return board

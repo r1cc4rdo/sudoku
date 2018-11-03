@@ -56,6 +56,8 @@ def solve(board):
 
         prev, allocated = allocated, sum(len(values) for values in board.itervalues())
 
+    return board
+
 
 if __name__ == '__main__':
 
@@ -63,5 +65,5 @@ if __name__ == '__main__':
     board = string_to_board(board_string)
 
     print board_to_pretty(board)
-    solve(board)
+    board = solve(board)
     print board_to_pretty(board, 9)
