@@ -3,7 +3,6 @@ A self-contained sudoku solver.
 This is just code from the sudoku module in a single file stripped of comments and blank lines.
 For details on functions and parameters, look at board_io.py and solver_w_search.py
 """
-
 from itertools import combinations, product, islice
 from collections import OrderedDict
 from copy import deepcopy
@@ -53,9 +52,13 @@ def string_to_board(board_representation):
     return board
 
 
-def board_to_string(board):
-    strings = [''.join(map(str, values)) for values in board.itervalues()]
-    return ''.join(s if len(s) == 1 else '.' for s in strings)
+def board_to_pretty(board, multi_values=1):
+    value_strings = [''.join(str(value) for value in values) for values in board.itervalues()]
+    value_strings = [value if len(value) <= multi_values else '.' for value in value_strings]
+    width = max(len(value_string) for value_string in value_strings)
+    sl = ' {} {} {} | {} {} {} | {} {} {} \n'  # standard line
+    hd = '+'.join(['-' * (1 + (width + 1) * 3)] * 3) + '\n'  # horizontal divider
+    return (sl * 3 + hd + sl * 3 + hd + sl * 3).format(*(value_string.center(width) for value_string in value_strings))
 
 
 if __name__ == '__main__':
@@ -74,4 +77,4 @@ if __name__ == '__main__':
      . 9 . | . . . | 4 . . 
 
     """
-    print board_to_string(solve(string_to_board(board_string)))
+    print board_to_pretty(solve(string_to_board(board_string)))

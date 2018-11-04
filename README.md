@@ -98,58 +98,48 @@ strategies][7]. Were we to implement those too, would we be capable of solving e
 
 The answer is again, sadly, "no".
 
-One easy way to convince oneself is to open the [Everest board on SudokuWiki.com solver][12].
-There, you can click repeatedly on the "Take step" button, which applies a large collection of advanced strategies
-to the board and still ultimately fail to recover the solution.
+One easy way to convince oneself is to open the [Everest board on SudokuWiki.com solver][12]. There, you can click
+repeatedly on the "Take step" button, which applies a large collection of advanced strategies to the board and still
+ultimately fail to recover the solution.
 
 ## Is search/backtracking necessary?
 
- that it is what most advanced strategies concentrate on 
+All the [advanced strategies][7] such as X-Wing, Swordfish, X-Y-Wing and extensions all look for either an even or odd
+number of chained conjugate pairs (pairs of cells that, for a candidate number, mutually exclude each other). In the
+even case, these rules search for candidates that are eliminated by either alternate allocation of values on the chain.
+In the odd case, one allocation causes an inconsistency and can be eliminated.
 
-advanced strategies focus on creating chains of
+All these strategies consider two or more alternate allocation of values and analyze the state of the board in either
+case. They are _search and backtracking_ strategies in disguise, no more clever than brute forcing through all possible
+combinations. 
 
-All the advanced strategies for solving very hard sudokus are based on graph-coloring and hypothesis testing.
-X-Wing, Swordfish, X-Y-Wing and extensions all look for either an even or odd number of chained conjugate pairs
-(pairs of cells that, for a candidate number, mutually exclude each other). In the even case, rules search for
-candidates that are eliminated by either allocation of the chain. In the odd case, one allocation causes an
-inconsistency and can be eliminated.
+Since all the strategies based on conjugated tuples are equivalent to _search and backtracking_, the latter is the
+second and final strategy required for solving any sudoku board. You can find the relevant code in [solver_w_search.py][11]
+and a self-contained implementation in a single file in [sudoku.py][1].
 
-I see all these rules as instances of graph coloring / search / hypothesis testing -- no more clever than brute
-forcing through all possible combinations. Since there exists sudokus that cannot be solved without resorting
-to enumeration, and that require an elephantine or artificial memory to keep track of temporary allocation, I
-feel no remorse in implementing a search strategy into a solver. My reason, contrary to [4], is not that search
-avoids implementing a plethora of rules; on the contrary, after generalizing all rules I came across, this one
-rule and search are the only two distinct ones standing.
+[Peter Norvig's implementation][14] justifies the introduction of search to avoid the tedious exercise of implementing
+dozens of rules. Turns out adding it is a necessary evil if we are to solve any possible sudoku instance. 
 
-Old:
+Ultimately the question "can every sudoku instance be solved logically?" is debatable. On one hand, there exist sudoku
+boards that human-applicable rules cannot crack. On the other, the _search and backtracking_ strategy often considered
+inelegant is an instance of [proof by contradiction][17], which is indeed part of the logic arsenal.
 
-Note: twin, triples and propagate out are instances of a more general rule we'll call divide_and_conquer.
-If you can divide a group in two sets of m and n elements (n + m == 9) and the subset of size n only contains
-instances of n distinct values, then you can remove those values from the elements of m. This subsumes propagate
-out because a single element containing a value is then erases than element from the groups it belongs.
-
-After you divide into two group, the elimination step applies to every group all cells belong to.
-
-
+Refer to Wikipedia to read more about [the mathematics of sudoku][15] and the availble [solving algorithms][16].
 
 [1]: https://github.com/r1cc4rdo/sudoku/blob/master/sudoku.py  "Self-contained solver"
 [2]: https://github.com/r1cc4rdo/sudoku/blob/master/sudoku/board_plot.py "Graphical sudoku plot"
 [3]: https://github.com/r1cc4rdo/sudoku/blob/master/sudoku/solver_wo_search.py "Basic solver w/o search"
 [4]: http://lmgtfy.com/?q=hardest+sudoku "Search for \"hardest sudoku\" on Google"
 [5]: https://www.telegraph.co.uk/news/science/science-news/9359579/Worlds-hardest-sudoku-can-you-crack-it.html "Everest board from Arto Inkala"
-
 [6]: http://www.sudokudragon.com/sudokustrategy.htm "sudokuDragon.com basic strategies"
 [7]: http://www.sudokudragon.com/advancedstrategy.htm "sudokuDragon.com advanced strategies"
 [8]: https://www.kristanix.com/sudokuepic/sudoku-solving-techniques.php "kristanix.com solving techniques"
 [9]: http://www.sudokuwiki.org/Strategy_Families "sudokuWiki strategy families"
-
 [10]: http://www.sudokuwiki.org/Hidden_Candidates "Hidden candidates strategy"
 [11]: https://github.com/r1cc4rdo/sudoku/blob/master/sudoku/solver_w_search.py "Solver with single rule and search"
 [12]: http://www.sudokuwiki.org/sudoku.htm?bd=800000000003600000070090200050007000000045700000100030001000068008500010090000400 "Everest board in SudokuWiki's solver"
-
 [13]: https://github.com/r1cc4rdo/sudoku/blob/master/sudoku.ipynb "Sudoku solver notebook"
-
-[]: http://norvig.com/sudoku.html "Peter Norvig's sudoku solver"
-
-[] https://en.wikipedia.org/wiki/Mathematics_of_Sudoku "Wikipedia: Mathematics of Sudoku"
-[] https://en.wikipedia.org/wiki/Sudoku_solving_algorithms "Wikipedia: Sudoku solving algorithms"
+[14]: http://norvig.com/sudoku.html "Peter Norvig's sudoku solver"
+[15] https://en.wikipedia.org/wiki/Mathematics_of_Sudoku "Wikipedia: Mathematics of Sudoku"
+[16] https://en.wikipedia.org/wiki/Sudoku_solving_algorithms "Wikipedia: Sudoku solving algorithms"
+[17] https://en.wikipedia.org/wiki/Proof_by_contradiction "Wikipedia: proof by contradiction"
