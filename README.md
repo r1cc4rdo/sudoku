@@ -29,11 +29,13 @@ but there are dozens of them for solving sudokus. See for example:
 3. [kristanix.com solving techniques][8]
 4. [sudokuWiki strategy families][9]
 
+## A single, generic elimination strategy 
+
 While coding the most promising new strategy to add, the ["hidden twins"][10] rule, it became obvious to me that it
-was an instance of a more general rule that emcompassed altogether _hidden twins_, _naked twins_, hidden/naked triples,
-quadruples and so on. Moreover, that _basic elimination_ and _sole candidate_ were also instances of that same rule,
-when the subset of interest (a pair, a triple, etc.) were of size 1. Here's [code][11] implementing that single general
-strategy:
+was an instance of a more general rule (which we will call, for the rest of this piece, _the Rule_) that encompassed
+altogether _hidden twins_, _naked twins_, hidden/naked triples, quadruples and so on. Moreover, that _basic
+elimination_ and _sole candidate_ were also instances of that same rule, when the subset of interest (a pair, a triple,
+etc.) were of size 1. Here's [code][11] implementing that single general strategy:
 
     for subset_size, group in product(range(1, 9), board.groups):
         for subset in combinations((cell for cell in group if len(board[cell]) == subset_size), subset_size):
@@ -77,6 +79,8 @@ This strategy alone, in 7 lines of code, extends all the following (using termin
 
 So, **this is awesome**. This single rule suffices to solve most sudokus rated "very hard", "super fiendish", and
 equivalent. But is it enough to solve any and every sudoku board?
+
+## Can the _Rule_ solve every sudoku board alone?
 
 Let's look again at the Everest board shown above. After iteratively applying the _Rule_, the following state is what
 we are left with. The small numbers in each square not filled are the potential remaining candidates for that cell
