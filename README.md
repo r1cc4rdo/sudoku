@@ -1,5 +1,4 @@
 ![Sudoku solve animation](./images/solve.gif)
-
 # A minimal Sudoku solver
 
 What you will find here:
@@ -17,13 +16,11 @@ version of the code](https://github.com/r1cc4rdo/sudoku/blob/master/sudoku/solve
 the "hard" boards from the plane's entertainment system. Back under the coverage of WiFi, it became soon obvious that
 Sudokus existed that my code could not solve: [searching for "hardest sudoku" on Google](https://www.telegraph.co.uk/news/science/science-news/9359579/Worlds-hardest-sudoku-can-you-crack-it.html),
 one typically lands on this Telegraph page for the infamous "Everest" board, from Arto Inkala.
-
 ![Stuck on the everest](./images/everest.png)
-
 There are dozens of strategies for solving sudokus. [My original code](https://github.com/r1cc4rdo/sudoku/blob/master/sudoku/solver_wo_search.py)
 only implemented three:
 
-* _basic elimination_ (remove a known value from peers candidates)
+* _basic elimination_ (remove a known value from peers' candidates)
 * _sole candidate_ (if all peers in a group cover all but 1 number, you're that number)
 * _naked twins_ (if two cells in a group share the same two candidate values, remove those values from peers)
 
@@ -68,6 +65,8 @@ Overall, those 7 lines of code cover the following (using name from [sudokuDrago
 * _only square_ (subset size: 8)
 * _two out of three_ (subset size: 8)
 * _sub-group exclusion_
+* _pointing pairs_
+* _pointing triples_
 * _naked twins_ (subset size: 2)
 * _hidden twins_ (subset size: 6)
 * _naked triplets_ (subset size: 3)
@@ -76,21 +75,28 @@ Overall, those 7 lines of code cover the following (using name from [sudokuDrago
 * _naked chains_
 * _hidden chains_
 
+So, _this is awesome_. This single rule suffices to solve most sudokus rated "very hard", "super fiendish", and
+equivalent. But it is sufficient to solve any and every sudoku board?
+![Stuck on the everest](./images/everest_marked.png)
+The answer is "no".
 
+Since it operates on a single group at a time, and propagates information within groups only if they
+share cells, it fails to capture the group to group dependencies exploited by [more advanced strategies](http://www.sudokudragon.com/advancedstrategy.htm).
+So surely, if we were to implement all of them, we would them be able to solve every sudoku, right?
 
-This rule subsumes several weaker rules for solving Sudokus.
-When subset_size == 1 and applied iteratively, it implements the basic elimination strategy that removes a known
-cell value from the possible candidates for peers. It also applies the "sole candidate", "unique candidate",
-"only square", "two out of three", and "sub-group exclusion" strategies (using the terminology of [1, 2]).
-When subset_size == 2, it is equivalent to applying the "hidden twins" rule (for subset of size 7), and the
-"naked twin" rule (for subsets of size 2). Equivalently, when subset_size == 3, implements "hidden triplets"
-(subset of size 6) and "naked triplet" (subset of size 3). In general, again using the terminology of [1, 2],
-when iterated it is a generic substitute for "general permutation", "naked chains", and "hidden chains".
+The answer is again, sadly, "no".
 
+One easy way to convince oneself of this is opening the [Everest board on SudokuWiki.com solver](http://www.sudokuwiki.org/sudoku.htm?bd=800000000003600000070090200050007000000045700000100030001000068008500010090000400).
+There, you can click repeatedly on the "Take step" button, which will apply a large collection of strategies to the
+board and still ultimately fail to recover the solution.
 
-This suffices to solve most sudokus rated "very hard", "super fiendish", and equivalent.
-Since this operates on a single group at a time, and propagates information within groups only if they
-share cells, it cannot solve all sudokus by itself.
+Let's have a second look at the Everest board shown above.
+
+The red numbers are
+
+you can generate with
+
+advanced strategies focus on creating chains of
 
 All the advanced strategies for solving very hard sudokus are based on graph-coloring and hypothesis testing.
 X-Wing, Swordfish, X-Y-Wing and extensions all look for either an even or odd number of chained conjugate pairs
