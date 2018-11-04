@@ -9,7 +9,7 @@ def plot_board(board, always_print_pencil_marks=False, colorize_conjugated_pairs
     """
     Plots a beautiful sudoku board using matplotlib.
     """
-    plot.figure().add_subplot(111, aspect='equal')
+    plot.figure(frameon=False).add_subplot(111, aspect='equal')
     plot.axis('off')
 
     for origin in ((0.3, 0.0), (0.0, 0.3), (0.6, 0.3), (0.3, 0.6)):
@@ -55,7 +55,7 @@ def plot_solve(board):
             return search(board)
 
         group_subset_dim = 1 if allocated < prev else group_subset_dim + 1
-        eliminate(board, group_subset_dim)
+        eliminate(board)
         prev = allocated
 
     return board

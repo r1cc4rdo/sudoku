@@ -7,7 +7,7 @@ What you will find here:
 * [Code][2] to print beautiful boards such as the one shown above ;)
 * A rambling explanation of what I mean by "minimal".
 
-### How many strategies are required to solve sudokus?
+## How many strategies are required to solve sudokus?
 
 This all started, like many things, on a whim. On a plane. By the time the flight was over, I had a [basic working
 version of the code][3] that could solve all the "hard" boards from the plane's entertainment system. Back under the
@@ -98,7 +98,7 @@ One easy way to convince oneself is to open the [Everest board on SudokuWiki.com
 There, you can click repeatedly on the "Take step" button, which applies a large collection of advanced strategies
 to the board and still ultimately fail to recover the solution.
 
-### Is search/backtracking necessary?
+## Is search/backtracking necessary?
 
  that it is what most advanced strategies concentrate on 
 
