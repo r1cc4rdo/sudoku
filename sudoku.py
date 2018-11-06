@@ -23,7 +23,7 @@ for index, (r, c) in enumerate(product(range(9), repeat=2)):
         groups[rcs + displacement].append(index)
 
 
-def eliminate(board, groups=groups):
+def eliminate_candidates(board, groups=groups):
     for subset_size, group in product(range(1, 9), groups):
         for subset in combinations((index for index in group if len(board[index]) == subset_size), subset_size):
             possible_values_in_subset = reduce(lambda s, index: s | set(board[index]), subset, set())
@@ -38,7 +38,7 @@ def solve(board):
     allocated, prev = 1 + 9**3, 2 + 9**3
     while 81 < allocated < prev:  # keep eliminating
         prev, allocated = allocated, sum(map(len, board))
-        eliminate(board)
+        eliminate_candidates(board)
     if allocated == 81:  # we're done!
         return board
     lengths = map(len, board)  # otherwise, we need to search
