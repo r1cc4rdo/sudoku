@@ -3,7 +3,7 @@
 
 What you will find here:
 
-* a [minimal implementation of a Sudoku][1] solver (self-contained in 1 page of code).
+* a [self-contained, half-page implementation of a Sudoku solver][1] ([try it out on Repl][18]!)
 * [Code][2] to print beautiful boards such as the one shown above ;)
 * A rambling explanation of what I mean by "minimal".
 
@@ -143,3 +143,4 @@ Refer to Wikipedia to read more about [the mathematics of sudoku][15] and the av
 [15]: https://en.wikipedia.org/wiki/Mathematics_of_Sudoku "Wikipedia: Mathematics of Sudoku"
 [16]: https://en.wikipedia.org/wiki/Sudoku_solving_algorithms "Wikipedia: Sudoku solving algorithms"
 [17]: https://en.wikipedia.org/wiki/Proof_by_contradiction "Wikipedia: proof by contradiction"
+[18]: https://repl.it/repls/TurquoiseImpressiveCoding "Repl.it: r1cc4rdo's Sudoku solver"
