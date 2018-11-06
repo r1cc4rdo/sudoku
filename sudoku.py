@@ -18,9 +18,9 @@ sudoku = """
 
 """
 groups = tuple([] for _ in range(27))
-for index, (r, c) in enumerate(product(range(9), repeat=2)):
-    for rcs, displacement in zip((r, c, 3 * (r / 3) + c / 3), range(0, 27, 9)):
-        groups[rcs + displacement].append(index)
+for index, (row, col) in enumerate(product(range(9), repeat=2)):
+    for displacement, rcs in enumerate((row, col, 3 * (row / 3) + col / 3)):
+        groups[rcs + displacement * 9].append(index)
 
 
 def eliminate_candidates(board, groups=groups):
@@ -48,7 +48,7 @@ def solve(board):
             return solve(board[:])
         except AssertionError as e:
             pass  # try next element
-    raise AssertionError('Search failed')
+    raise AssertionError('keep searching in caller')
 
 
 def string_to_board(board_string, blanks='.0'):
