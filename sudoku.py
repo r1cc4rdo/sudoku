@@ -31,7 +31,7 @@ def eliminate_candidates(board, groups=groups):
                 all_supersets = [g for g in groups if all(index in g for index in subset)]
                 for index in [index for g in all_supersets for index in g if index not in subset]:
                     board[index] = ''.join(value for value in board[index] if value not in possible_values_in_subset)
-                    assert board[index]
+                    assert board[index]  # if triggered, inconsistent assignment detected
 
 
 def solve(board):
@@ -48,14 +48,14 @@ def solve(board):
             return solve(board[:])
         except AssertionError as e:
             pass  # try next element
-    raise AssertionError('keep searching in caller')
+    raise AssertionError('No solutions found')  # keep searching in caller
 
 
 def string_to_board(board_string, blanks='.0'):
     return list(islice([c if c.isdigit() else '123456789' for c in board_string if c.isdigit() or c in blanks], 81))
 
 
-def board_to_pretty(board):
+def board_to_string(board):
     width = max(map(len, board))
     sl = ' {} {} {} | {} {} {} | {} {} {} \n'  # standard line
     hd = '+'.join(['-' * (1 + (width + 1) * 3)] * 3) + '\n'  # horizontal divider
@@ -63,4 +63,4 @@ def board_to_pretty(board):
 
 
 if __name__ == '__main__':
-    print board_to_pretty(solve(string_to_board(sudoku)))
+    print board_to_string(solve(string_to_board(sudoku)))
