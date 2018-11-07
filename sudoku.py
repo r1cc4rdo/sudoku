@@ -25,24 +25,24 @@ for index, (row, col) in enumerate(product(range(9), repeat=2)):
 
 def eliminate_candidates(board, groups=groups):
     for subset_size, group in product(range(1, 9), groups):
-        for subset in combinations((index for index in group if len(board[index]) == subset_size), subset_size):
-            possible_values_in_subset = reduce(lambda s, index: s | set(board[index]), subset, set())
-            if len(possible_values_in_subset) == len(subset):  # we found a constraint
-                all_supersets = [g for g in groups if all(index in g for index in subset)]
+        for subset in combinations(group, subset_size):
+            candidates_in_subset = set(''.join(board[index] for index in subset))
+            if len(candidates_in_subset) == len(subset):  # we found a constraint
+                all_supersets = [g for g in groups if set(subset) <= set(g)]
                 for index in [index for g in all_supersets for index in g if index not in subset]:
-                    board[index] = ''.join(value for value in board[index] if value not in possible_values_in_subset)
+                    board[index] = ''.join(c for c in board[index] if c not in candidates_in_subset)
                     assert board[index]  # if triggered, inconsistent assignment detected
 
 
 def solve(board):
-    allocated, prev = 1 + 9**3, 2 + 9**3
-    while 81 < allocated < prev:  # keep eliminating
-        prev, allocated = allocated, sum(map(len, board))
+    candidates, prev = 1 + 9**3, 2 + 9**3
+    while 81 < candidates < prev:  # keep eliminating
+        prev, candidates = candidates, sum(map(len, board))
         eliminate_candidates(board)
-    if allocated == 81:  # we're done!
+    if candidates == 81:  # we're done!
         return board
     lengths = map(len, board)  # otherwise, we need to search
-    pivot = lengths.index(min(filter(lambda x: x > 1, lengths)))
+    pivot = lengths.index(sorted(set(lengths))[1])
     for board[pivot] in board[pivot]:
         try:
             return solve(board[:])
