@@ -105,19 +105,19 @@ which still ultimately fail to pinpoint the single correct solution.
 
 [Advanced strategies][7] such as X-Wing, Swordfish, X-Y-Wing and extensions derive constraints from loops of conjugate
 pairs (pairs of cells that, for a candidate number, mutually exclude each other). In a loop with an odd number of
-cells, one of the two configurations leads to an inconsistent state and can be rules out. For an even number of cells,
+cells, one of the two configurations leads to an inconsistent state and can be ruled out. For an even number of cells,
 no inconsistency can be directly detected but one can remove candidates that are eliminated in either configuration.
 
-All these strategies consider two or more alternate allocations for a collection of linked cells, and compare the
-resulting state of the board in each case. They are, in essence, _search and backtracking_ strategies in disguise,
-no more clever than brute forcing through all possible combinations. 
+All these strategies consider two or more alternate allocations of values in a collection of linked cells, and compare
+the resulting state of the board in each one of the cases. They are, in essence, _search and backtracking_ strategies
+in disguise, no more clever than brute forcing through all possible combinations. 
 
 Since all the strategies based on conjugated tuples are equivalent to _search and backtracking_, the latter is the
 second and final strategy required for solving any sudoku board. [sudoku.py][1] is a a self-contained solver based
 on these two ideas.
 
 [Peter Norvig's implementation][14] justifies the introduction of search to avoid the tedious exercise of implementing
-dozens of complicated rules, but turns out adding search is a necessary evil if we are to solve any possible sudoku
+dozens of complicated rules, but it turns out adding search is a necessary evil if we are to solve any possible sudoku
 instance. 
 
 Ultimately the question "_can every sudoku instance be solved logically?_" is debatable. On one hand, there exist
