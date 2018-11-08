@@ -87,7 +87,7 @@ we are left with the following board state:
 ![Stuck on the everest](./images/everest_marked.png)
 
 The small numbers in each unassigned cell are the remaining candidates (often called "pencil marks": the red ones are
-those participating in a [_conjugated pairs_][7], discussed later).
+those participating in a [_conjugated pair_][7], discussed later).
 
 So, the answer is "_no_".
 
