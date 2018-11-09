@@ -18,7 +18,7 @@ found Sudokus that my code could not solve: [searching for "hardest sudoku" on G
 
 [The initial solver][3] implements three strategies:
 
-* _basic elimination_ (remove the valueof an assigned cell from its peers' candidates)
+* _basic elimination_ (remove the value of an assigned cell from its peers' candidates)
 * _sole candidate_ (if all peers in a group cover all but 1 number, you're that number)
 * _naked twins_ (if two cells in a group share the same two candidate values, remove those values from peers)
 
@@ -28,7 +28,7 @@ but there are dozens of them for solving sudokus. See for example:
 2. [kristanix.com][8] solving techniques
 3. sudokuDragon.com strategies: [basic][6] / [advanced][7]
 
-## A single, generic elimination strategy 
+## A single, generic elimination strategy (aka _the Rule_)
 
 While adding the ["hidden twins"][10] strategy to the basic solver, I realized that the _naked_ and _hidden twins_
 are instances of a more general rule (which we will call, for the rest of this piece, _the Rule_) that encompasses
@@ -117,7 +117,7 @@ second and final strategy required for solving any sudoku board. [sudoku.py][1] 
 on these two ideas.
 
 [Peter Norvig's implementation][14] justifies the introduction of search to avoid the tedious exercise of implementing
-dozens of complicated rules, but it turns out adding search is a necessary evil if we are to solve any possible sudoku
+dozens of rules, but it turns out adding search is a necessary evil if we are to solve any possible sudoku
 instance. 
 
 Ultimately the question "_can every sudoku instance be solved logically?_" is debatable. On one hand, there exist
