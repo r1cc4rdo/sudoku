@@ -35,7 +35,9 @@ def eliminate_candidates(board, groups=groups):
                     assert board[index]  # if triggered, inconsistent assignment detected
 
 
+num_solves = 0
 def solve(board):
+    global num_solves; num_solves += 1
     candidates, prev = 1 + 9**3, 2 + 9**3
     while 81 < candidates < prev:  # keep eliminating
         prev, candidates = candidates, sum(map(len, board))
@@ -57,3 +59,4 @@ if __name__ == '__main__':
     board = list(islice([c if c.isdigit() else '123456789' for c in sudoku if c.isdigit() or c in '.0'], 81))
     line, div = ' {} {} {} | {} {} {} | {} {} {} \n', '-------+-------+-------\n'
     print (line * 3 + div + line * 3 + div + line * 3).format(*solve(board))
+    print "num_solves = %r" % (num_solves,)
