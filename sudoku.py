@@ -22,6 +22,7 @@ groups = tuple([] for _ in range(27))
 for index, (row, col) in enumerate(product(range(9), repeat=2)):
     for displacement, rcs in enumerate((row, col, 3 * (row / 3) + col / 3)):
         groups[rcs + displacement * 9].append(index)
+rows_and_columns = groups[0:18]
 
 
 def eliminate_candidates(board, groups=groups):
@@ -35,6 +36,19 @@ def eliminate_candidates(board, groups=groups):
                     assert board[index]  # if triggered, inconsistent assignment detected
 
 
+def transpose_digits_with_cols(board):
+    # for each row and digit, answer[row * 9 + digit] will be a string
+    # representing the col positions of digit in the row
+    return [''.join('123456789'[col] for col in range(9) if digit in board[row * 9 + col])
+            for row in range(9) for digit in '123456789']
+
+
+def eliminate_rowcolumn_fish(board):
+    board[:] = transpose_digits_with_cols(board)
+    eliminate_candidates(board, rows_and_columns)
+    board[:] = transpose_digits_with_cols(board)
+
+
 num_solves = 0
 def solve(board):
     global num_solves; num_solves += 1
@@ -42,6 +56,7 @@ def solve(board):
     while 81 < candidates < prev:  # keep eliminating
         prev, candidates = candidates, sum(map(len, board))
         eliminate_candidates(board)
+        eliminate_rowcolumn_fish(board)
     if candidates == 81:  # we're done!
         return board
     lengths = map(len, board)  # otherwise, we need to search
