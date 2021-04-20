@@ -1,6 +1,7 @@
 # A self-contained sudoku solver. Find me here: https://github.com/r1cc4rdo/sudoku
 
 from itertools import *
+import sys
 
 sudoku = """
 
@@ -52,6 +53,7 @@ def solve(board):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) == 2: sudoku = sys.argv[1]
     board = list(islice([c if c.isdigit() else '123456789' for c in sudoku if c.isdigit() or c in '.0'], 81))
     line, div = ' {} {} {} | {} {} {} | {} {} {} \n', '-------+-------+-------\n'
     print (line * 3 + div + line * 3 + div + line * 3).format(*solve(board))
