@@ -38,8 +38,8 @@ def eliminate_candidates(board, groups=groups):
 def solve(board):
     candidates, prev = 1 + 9**3, 2 + 9**3
     while 81 < candidates < prev:  # keep eliminating
-        prev, candidates = candidates, sum(map(len, board))
         eliminate_candidates(board)
+        prev, candidates = candidates, sum(map(len, board))
     if candidates == 81:  # we're done!
         return board
     lengths = map(len, board)  # otherwise, we need to search
@@ -55,6 +55,6 @@ def solve(board):
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         sudoku = ' '.join(sys.argv[1:])
-    board = list(islice([c if c.isdigit() else '123456789' for c in sudoku if c.isdigit() or c in '.0'], 81))
+    board = list(islice((c if c in '123456789' else '123456789' for c in sudoku if c in '0123456789.'), 81))
     line, div = ' {} {} {} | {} {} {} | {} {} {} \n', '-------+-------+-------\n'
     print (line * 3 + div + line * 3 + div + line * 3).format(*solve(board))
