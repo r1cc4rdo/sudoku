@@ -72,8 +72,8 @@ This strategy alone, in 7 lines of code, generalizes all the following:
 * _hidden twins_ (subset size: 7)
 * _naked triplets_ (subset size: 3)
 * _hidden triplets_ (subset size: 6)
-* _naked quads (subset size: 4)
-* _hidden quads (subset size: 5)
+* _naked quads_ (subset size: 4)
+* _hidden quads_ (subset size: 5)
 * _general permutation_
 * _naked chains_
 * _hidden chains_
