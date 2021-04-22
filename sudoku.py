@@ -49,29 +49,30 @@ def eliminate_rowcolumn_fish(board):
     board[:] = transpose_digits_with_cols(board)
 
 
-num_solves = 0
-def solve(board):
-    global num_solves; num_solves += 1
+def solve(board, num_solves):
+    num_solves[0] += 1
     candidates, prev = 1 + 9**3, 2 + 9**3
     while 81 < candidates < prev:  # keep eliminating
-        prev, candidates = candidates, sum(map(len, board))
         eliminate_candidates(board)
         eliminate_rowcolumn_fish(board)
+        prev, candidates = candidates, sum(map(len, board))
     if candidates == 81:  # we're done!
         return board
     lengths = map(len, board)  # otherwise, we need to search
     pivot = lengths.index(sorted(set(lengths))[1])
     for board[pivot] in board[pivot]:
         try:
-            return solve(board[:])
+            return solve(board[:], num_solves)
         except AssertionError as e:
             pass  # try next element
     raise AssertionError('No solutions found')  # keep searching in caller
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2: sudoku = sys.argv[1]
-    board = list(islice([c if c.isdigit() else '123456789' for c in sudoku if c.isdigit() or c in '.0'], 81))
+    if len(sys.argv) > 1:
+        sudoku = ' '.join(sys.argv[1:])
+    board = list(islice((c if c in '123456789' else '123456789' for c in sudoku if c in '0123456789.'), 81))
     line, div = ' {} {} {} | {} {} {} | {} {} {} \n', '-------+-------+-------\n'
-    print (line * 3 + div + line * 3 + div + line * 3).format(*solve(board))
-    print "num_solves = %r" % (num_solves,)
+    num_solves = [0]
+    print (line * 3 + div + line * 3 + div + line * 3).format(*solve(board, num_solves))
+    print("num_solves = %r" % (num_solves[0],))
