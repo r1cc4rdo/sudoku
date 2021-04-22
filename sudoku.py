@@ -35,9 +35,8 @@ def eliminate_candidates(board, groups=groups):
                     assert board[index]  # if triggered, inconsistent assignment detected
 
 
-num_solves = 0
-def solve(board):
-    global num_solves; num_solves += 1
+def solve(board, num_solves):
+    num_solves[0] += 1
     candidates, prev = 1 + 9**3, 2 + 9**3
     while 81 < candidates < prev:  # keep eliminating
         eliminate_candidates(board)
@@ -48,7 +47,7 @@ def solve(board):
     pivot = lengths.index(sorted(set(lengths))[1])
     for board[pivot] in board[pivot]:
         try:
-            return solve(board[:])
+            return solve(board[:], num_solves)
         except AssertionError as e:
             pass  # try next element
     raise AssertionError('No solutions found')  # keep searching in caller
@@ -59,5 +58,6 @@ if __name__ == '__main__':
         sudoku = ' '.join(sys.argv[1:])
     board = list(islice((c if c in '123456789' else '123456789' for c in sudoku if c in '0123456789.'), 81))
     line, div = ' {} {} {} | {} {} {} | {} {} {} \n', '-------+-------+-------\n'
-    print (line * 3 + div + line * 3 + div + line * 3).format(*solve(board))
-    print "num_solves = %r" % (num_solves,)
+    num_solves = [0]
+    print (line * 3 + div + line * 3 + div + line * 3).format(*solve(board, num_solves))
+    print("num_solves = %r" % (num_solves[0],))
