@@ -18,10 +18,9 @@ sudoku = """
  . 9 . | . . . | 4 . . 
 
 """
-groups = tuple([] for _ in range(27))
-for index, (row, col) in enumerate(product(range(9), repeat=2)):
-    for displacement, rcs in enumerate((row, col, 3 * (row / 3) + col / 3)):
-        groups[rcs + displacement * 9].append(index)
+groups = ([set(range(row * 9, row * 9 + 9)) for row in range(9)] +
+          [set(range(col, 81, 9)) for col in range(9)] +
+          [set(((block/3*3 + i/3)*3 + block%3)*3 + i%3 for i in range(9)) for block in range(9)])
 
 
 def eliminate_candidates(board, groups=groups):
@@ -29,8 +28,9 @@ def eliminate_candidates(board, groups=groups):
         for subset in combinations(group, subset_size):
             candidates_in_subset = set(''.join(board[index] for index in subset))
             if len(candidates_in_subset) == len(subset):  # we found a constraint
-                all_supersets = [g for g in groups if set(subset) <= set(g)]
-                for index in [index for g in all_supersets for index in g if index not in subset]:
+                subset_set = set(subset)
+                all_supersets = [g for g in groups if subset_set <= g]
+                for index in set(index for g in all_supersets for index in g if index not in subset_set):
                     board[index] = ''.join(c for c in board[index] if c not in candidates_in_subset)
                     assert board[index]  # if triggered, inconsistent assignment detected
 
